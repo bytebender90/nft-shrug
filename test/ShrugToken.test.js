@@ -25,9 +25,9 @@ contract("ShrugToken", (accounts) => {
     describe("Mint", () => {
         it("mint", async () => {
             await shrugtoken_contract.addMinter(accounts[1], {from: accounts[0]});
-            await mint(accounts[1], 0);
+            await mint(accounts[1], 5);
             console.log(await shrugtoken_contract.getBaseURI());
-            console.log(await shrugtoken_contract.tokenURI(0));
+            console.log(await shrugtoken_contract.tokenURI(5));
         });
     });
 });

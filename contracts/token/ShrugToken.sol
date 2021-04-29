@@ -3,11 +3,14 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "../role/MinterRole.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
 /**
  * @title Shrug ERC-721 Token
  */
 contract ShrugToken is MinterRole, ERC721 {
+    using Strings for uint256;
+
     // Base URI
     string private baseURI;
 
@@ -48,7 +51,18 @@ contract ShrugToken is MinterRole, ERC721 {
     }
 
     /**
-     * @dev Mint function
+     * @dev See {IERC721Metadata-tokenURI}.
+     */
+    function tokenURI(uint256 tokenId) public view override returns (string memory) {
+        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+
+        return bytes(baseURI).length > 0
+            ? string(abi.encodePacked(baseURI, (tokenId % 2).toString()))
+            : '';
+    }
+
+    /**
+     * @dev Mint token function
      * @param to Address of owner
      * @param tokenId Id of the token
      */
@@ -57,5 +71,15 @@ contract ShrugToken is MinterRole, ERC721 {
         uint256 tokenId
     ) external onlyMinter {
         _mint(to, tokenId);
+    }
+
+    /**
+     * @dev Burn token function
+     * @param tokenId Id of the token
+     */
+    function burn(
+        uint256 tokenId
+    ) external onlyMinter {
+        _burn(tokenId);
     }
 }
