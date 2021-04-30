@@ -4,11 +4,12 @@ pragma solidity ^0.8.0;
 import "../interfaces/IShrugToken.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "../interfaces/IShrugToken.sol";
+import "../curves/Exponential.sol";
 
 /**
  * @title Shrug Sale Contract
  */
-contract ShrugSale is Ownable {
+contract ShrugSale is Ownable, Exponential {
 
     /// @notice Event emitted only on construction. To be used by indexers
     event ShrugSaleDeployed();
@@ -82,21 +83,32 @@ contract ShrugSale is Ownable {
         emit UpdatedRecipients(_recipients);
     }
 
+    /**
+     * @dev Buy Function
+     */
     function buy() external payable {
         require(
             totalSupply < maxSupply,
             "ShrugSale.buy: All tokens are minted"
         );
 
-        uint256 price = 100;
+        uint256 price = _getCurrentPrice(totalSupply);
+        require(
+            msg.value == price,
+            "ShrugSale.buy: Value is not same as the price"
+        );
 
         token.mint(msg.sender, increasingTokenId);
-        increasingTokenId++;
         totalSupply++;
+        increasingTokenId++;
 
         emit TokenBought(msg.sender, increasingTokenId, price);
     }
 
+    /**
+     * @dev Sell Function
+     * @param tokenId Id of the token
+     */
     function sell(uint256 tokenId) external {
         require(
             totalSupply > 0,
@@ -107,10 +119,10 @@ contract ShrugSale is Ownable {
             "ShrugSale.sell: Caller is not the owner"
         );
 
+        uint256 price = _getCurrentPrice(totalSupply - 1);
+
         token.burn(tokenId);
         totalSupply--;
-
-        uint256 price = 100;
 
         (bool transferSuccess, ) =
             msg.sender.call{value: price}("");
@@ -120,5 +132,20 @@ contract ShrugSale is Ownable {
         );
 
         emit TokenSold(msg.sender, tokenId, price);
+    }
+
+    /**
+     * @dev Public get current price
+     */
+    function getCurrentPrice() public view returns (uint256) {
+        return _getCurrentPrice(totalSupply);
+    }
+
+    /**
+     * @dev Private get current price
+     * @param _supply supply of the token
+     */
+    function _getCurrentPrice(uint256 _supply) private pure returns (uint256) {
+        return calculatePrice(_supply);
     }
 }
