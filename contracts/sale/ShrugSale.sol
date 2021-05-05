@@ -26,13 +26,6 @@ contract ShrugSale is Ownable, Exponential {
         uint256 value
     );
 
-    /// @notice Token sold event
-    event TokenSold(
-        address seller,
-        uint256 tokenId,
-        uint256 value
-    );
-
     /// @notice addresses of recipients who received the funds
     address[] public recipients;
 
@@ -40,13 +33,10 @@ contract ShrugSale is Ownable, Exponential {
     IShrugToken public token;
 
     /// @notice max supply of token
-    uint256 public maxSupply = 200;
+    uint256 public maxSupply = 500;
 
     /// @notice total supply of token
     uint256 public totalSupply;
-
-    /// @notice token id of token
-    uint256 public increasingTokenId;
 
     /**
      * @dev Constructor function
@@ -92,60 +82,30 @@ contract ShrugSale is Ownable, Exponential {
             "ShrugSale.buy: All tokens are minted"
         );
 
-        uint256 price = _getCurrentPrice(totalSupply);
+        uint256 price = getCurrentPrice();
         require(
             msg.value == price,
             "ShrugSale.buy: Value is not same as the price"
         );
 
-        token.mint(msg.sender, increasingTokenId);
         totalSupply++;
-        increasingTokenId++;
+        token.mint(msg.sender, totalSupply);
 
-        emit TokenBought(msg.sender, increasingTokenId, price);
-    }
+        for(uint256 i = 0; i < recipients.length; i++) {
+            (bool transferSuccess, ) = recipients[i].call{value: price / recipients.length}("");
+            require(
+                transferSuccess,
+                "Auction._refundHighestBidder: failed to refund previous bidder"
+            );
+        }
 
-    /**
-     * @dev Sell Function
-     * @param tokenId Id of the token
-     */
-    function sell(uint256 tokenId) external {
-        require(
-            totalSupply > 0,
-            "ShrugSale.sell: There is no token"
-        );
-        require(
-            token.ownerOf(tokenId) == msg.sender,
-            "ShrugSale.sell: Caller is not the owner"
-        );
-
-        uint256 price = _getCurrentPrice(totalSupply - 1);
-
-        token.burn(tokenId);
-        totalSupply--;
-
-        (bool transferSuccess, ) =
-            msg.sender.call{value: price}("");
-        require(
-            transferSuccess,
-            "ShrugSale.sell: Failed to transfer"
-        );
-
-        emit TokenSold(msg.sender, tokenId, price);
+        emit TokenBought(msg.sender, totalSupply, price);
     }
 
     /**
      * @dev Public get current price
      */
     function getCurrentPrice() public view returns (uint256) {
-        return _getCurrentPrice(totalSupply);
-    }
-
-    /**
-     * @dev Private get current price
-     * @param _supply supply of the token
-     */
-    function _getCurrentPrice(uint256 _supply) private pure returns (uint256) {
-        return calculatePrice(_supply);
+        return calculatePrice(totalSupply);
     }
 }

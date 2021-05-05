@@ -24,6 +24,10 @@ contract("ShrugSale", (accounts) => {
         });
 
         await shrugtoken_contract.addMinter(shrugsale_contract.address, {from: accounts[0]});
+        await shrugsale_contract.setRecipients([
+            accounts[8],
+            accounts[9]
+        ], {from: accounts[0]});
     });
 
     describe("Sale", () => {
@@ -46,80 +50,53 @@ contract("ShrugSale", (accounts) => {
         it("buy is working with correct balance", async () => {
             let value = new BN('1000000000000000000');
 
+            const recipient1BeforeBalance = new BN(await web3.eth.getBalance(accounts[8]));
+            const recipient2BeforeBalance = new BN(await web3.eth.getBalance(accounts[9]));
+
             await shrugsale_contract.buy(
                 { from: accounts[1], value }
             );
 
-            assert.equal(await shrugtoken_contract.ownerOf(0), accounts[1]);
+            const recipient1Balance = new BN(await web3.eth.getBalance(accounts[8]));
+            const recipient2Balance = new BN(await web3.eth.getBalance(accounts[9]));
+
+            assert.equal(await shrugtoken_contract.ownerOf(1), accounts[1]);
+            assert.equal(recipient1Balance.sub(recipient1BeforeBalance).toString(), new BN('500000000000000000'));
+            assert.equal(recipient2Balance.sub(recipient2BeforeBalance).toString(), new BN('500000000000000000'));
         });
         it("buy is working with correct balance", async () => {
             let value = new BN('4000000000000000000');
+
+            const recipient1BeforeBalance = new BN(await web3.eth.getBalance(accounts[8]));
+            const recipient2BeforeBalance = new BN(await web3.eth.getBalance(accounts[9]));
 
             await shrugsale_contract.buy(
                 { from: accounts[2], value }
             );
 
-            assert.equal(await shrugtoken_contract.ownerOf(1), accounts[2]);
+            const recipient1Balance = new BN(await web3.eth.getBalance(accounts[8]));
+            const recipient2Balance = new BN(await web3.eth.getBalance(accounts[9]));
+
+            assert.equal(await shrugtoken_contract.ownerOf(2), accounts[2]);
+            assert.equal(recipient1Balance.sub(recipient1BeforeBalance).toString(), new BN('2000000000000000000'));
+            assert.equal(recipient2Balance.sub(recipient2BeforeBalance).toString(), new BN('2000000000000000000'));
         });
         it("buy is working with correct balance", async () => {
             let value = new BN('9000000000000000000');
+
+            const recipient1BeforeBalance = new BN(await web3.eth.getBalance(accounts[8]));
+            const recipient2BeforeBalance = new BN(await web3.eth.getBalance(accounts[9]));
 
             await shrugsale_contract.buy(
                 { from: accounts[3], value }
             );
 
-            assert.equal(await shrugtoken_contract.ownerOf(2), accounts[3]);
-        });
-        it("sell is not working if caller is not the owner", async () => {
-            let thrownError;
-            try {
-                await shrugsale_contract.sell(
-                    0,
-                    { from: accounts[9] }
-                );
-            } catch (error) {
-                thrownError = error;
-            }
+            const recipient1Balance = new BN(await web3.eth.getBalance(accounts[8]));
+            const recipient2Balance = new BN(await web3.eth.getBalance(accounts[9]));
 
-            assert.include(
-                thrownError.message,
-                'ShrugSale.sell: Caller is not the owner',
-            )
-        });
-        it("sell is working", async () => {
-            let beforeBalance  = new BN(await web3.eth.getBalance(accounts[1]));
-
-            const receipt = await shrugsale_contract.sell(
-                0,
-                { from: accounts[1] }
-            );
-            let afterBalance  = new BN(await web3.eth.getBalance(accounts[1]));
-            const tx = await web3.eth.getTransaction(receipt.tx);
-            const gasFee = new BN(receipt.receipt.gasUsed).mul(new BN(tx.gasPrice));
-
-            assert.equal(afterBalance.sub(beforeBalance).add(gasFee).toString(), new BN('9000000000000000000').toString());
-        });
-        it("sell is working", async () => {
-            let beforeBalance  = new BN(await web3.eth.getBalance(accounts[2]));
-            
-            const receipt = await shrugsale_contract.sell(
-                1,
-                { from: accounts[2] }
-            );
-            let afterBalance  = new BN(await web3.eth.getBalance(accounts[2]));
-            const tx = await web3.eth.getTransaction(receipt.tx);
-            const gasFee = new BN(receipt.receipt.gasUsed).mul(new BN(tx.gasPrice));
-
-            assert.equal(afterBalance.sub(beforeBalance).add(gasFee).toString(), new BN('4000000000000000000').toString());
-        });
-        it("sell is working", async () => {
-            let value = new BN('4000000000000000000');
-
-            await shrugsale_contract.buy(
-                { from: accounts[4], value }
-            );
-
-            assert.equal(await shrugtoken_contract.ownerOf(3), accounts[4]);
+            assert.equal(await shrugtoken_contract.ownerOf(3), accounts[3]);
+            assert.equal(recipient1Balance.sub(recipient1BeforeBalance).toString(), new BN('4500000000000000000'));
+            assert.equal(recipient2Balance.sub(recipient2BeforeBalance).toString(), new BN('4500000000000000000'));
         });
     });
 });
