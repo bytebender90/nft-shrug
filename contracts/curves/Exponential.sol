@@ -11,7 +11,6 @@ contract Exponential {
         pure
         returns (uint256)
     {
-
-        return (totalSupply + 1) ** 2 * decimals;
+        return  decimals * 3 * (totalSupply + 1) ** 3 / 1250000;
     }
 }
