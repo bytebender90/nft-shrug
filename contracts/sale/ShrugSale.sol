@@ -57,15 +57,15 @@ contract ShrugSale is Ownable, Exponential {
     function setRecipients(address[] memory _recipients) external onlyOwner {
         require(
             _recipients.length > 0,
-            "ShrugSale.setRecipients: Empty array is provided"
+            "ShrugSale: Empty array is provided"
         );
         require(
             _recipients.length <= 50,
-            "ShrugSale.setRecipients: Count of recipients can't exceed 50"
+            "ShrugSale: Count of recipients can't exceed 50"
         );
         
         for(uint256 i = 0; i < _recipients.length; i++) {
-            require(_recipients[i] != address(0), "ShrugSale.setRecipients: Invalid recipient address");
+            require(_recipients[i] != address(0), "ShrugSale: Invalid recipient address");
         }
 
         recipients = _recipients;
@@ -75,27 +75,34 @@ contract ShrugSale is Ownable, Exponential {
 
     /**
      * @dev Buy Function
+     * @param _count Count of tokens to buy
      */
-    function buy() external payable {
+    function buy(uint256 _count) external payable {
+        require(
+            _count < 100,
+            "ShrugSale: Count should be less than 100"
+        );
         require(
             totalSupply < maxSupply,
-            "ShrugSale.buy: All tokens are minted"
+            "ShrugSale: All tokens are minted"
         );
 
-        uint256 price = getCurrentPrice();
+        uint256 price = getPrice(_count);
         require(
             msg.value == price,
-            "ShrugSale.buy: Value is not same as the price"
+            "ShrugSale: Value is not same as the price"
         );
 
-        totalSupply++;
-        token.mint(msg.sender, totalSupply);
+        for(uint256 i = 0; i < _count; i++) {
+            totalSupply++;
+            token.mint(msg.sender, totalSupply);
+        }
 
         for(uint256 i = 0; i < recipients.length; i++) {
             (bool transferSuccess, ) = recipients[i].call{value: price / recipients.length}("");
             require(
                 transferSuccess,
-                "Auction._refundHighestBidder: failed to refund previous bidder"
+                "ShrugSale: failed to transfer"
             );
         }
 
@@ -103,9 +110,19 @@ contract ShrugSale is Ownable, Exponential {
     }
 
     /**
-     * @dev Public get current price
+     * @dev Public get price
+     * @param _count Count of tokens which wanna get the price of
      */
-    function getCurrentPrice() public view returns (uint256) {
-        return calculatePrice(totalSupply);
+    function getPrice(uint256 _count) public view returns (uint256) {
+        require(
+            _count < 100,
+            "ShrugSale: Count should be less than 100"
+        );
+        uint256 price;
+        for(uint256 i = 0; i < _count; i++) {
+            price += calculatePrice(totalSupply + i);
+        }
+
+        return price;
     }
 }

@@ -2,7 +2,6 @@
 pragma solidity ^0.8.0;
 
 contract Exponential {
-
     uint256 constant public decimals = 10**18;
 
     function calculatePrice(
