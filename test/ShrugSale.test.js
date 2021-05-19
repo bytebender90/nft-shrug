@@ -79,7 +79,7 @@ contract("ShrugSale", (accounts) => {
             )
         });
         it("buy is working with correct balance", async () => {
-            let value = new BN('21600000000000');
+            let value = new BN(await shrugsale_contract.getPrice(2,0));
 
             const recipient1BeforeBalance = new BN(await web3.eth.getBalance(accounts[8]));
             const recipient2BeforeBalance = new BN(await web3.eth.getBalance(accounts[9]));
@@ -93,11 +93,11 @@ contract("ShrugSale", (accounts) => {
             const recipient2Balance = new BN(await web3.eth.getBalance(accounts[9]));
 
             assert.equal(await shrugtoken_contract.ownerOf(2), accounts[1]);
-            assert.equal(recipient1Balance.sub(recipient1BeforeBalance).toString(), new BN('10800000000000'));
-            assert.equal(recipient2Balance.sub(recipient2BeforeBalance).toString(), new BN('10800000000000'));
+            assert.equal(recipient1Balance.sub(recipient1BeforeBalance).toString(), value.div(new BN('2')).toString());
+            assert.equal(recipient2Balance.sub(recipient2BeforeBalance).toString(), value.div(new BN('2')).toString());
         });
         it("buy is working with correct balance", async () => {
-            let value = new BN('64800000000000');
+            let value = new BN(await shrugsale_contract.getPrice(1,0));
 
             const recipient1BeforeBalance = new BN(await web3.eth.getBalance(accounts[8]));
             const recipient2BeforeBalance = new BN(await web3.eth.getBalance(accounts[9]));
@@ -111,8 +111,8 @@ contract("ShrugSale", (accounts) => {
             const recipient2Balance = new BN(await web3.eth.getBalance(accounts[9]));
 
             assert.equal(await shrugtoken_contract.ownerOf(3), accounts[3]);
-            assert.equal(recipient1Balance.sub(recipient1BeforeBalance).toString(), new BN('32400000000000'));
-            assert.equal(recipient2Balance.sub(recipient2BeforeBalance).toString(), new BN('32400000000000'));
+            assert.equal(recipient1Balance.sub(recipient1BeforeBalance).toString(), value.div(new BN('2')).toString());
+            assert.equal(recipient2Balance.sub(recipient2BeforeBalance).toString(), value.div(new BN('2')).toString());
         });
         it("buy is working with insuffient USDT", async () => {
             let value = new BN(await shrugsale_contract.getPrice(1,1));

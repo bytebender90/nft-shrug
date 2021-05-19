@@ -99,17 +99,17 @@ contract ShrugSale is Exponential {
             "ShrugSale: Value is not same as the price"
         );
 
-        for(uint256 i = 0; i < _count; i++) {
-            totalSupply++;
-            token.mint(msg.sender, totalSupply);
-        }
-
         for(uint256 i = 0; i < recipients.length; i++) {
             (bool transferSuccess, ) = recipients[i].call{value: price / recipients.length}("");
             require(
                 transferSuccess,
                 "ShrugSale: failed to transfer"
             );
+        }
+
+        for(uint256 i = 0; i < _count; i++) {
+            totalSupply++;
+            token.mint(msg.sender, totalSupply);
         }
 
         emit TokenBought(msg.sender, totalSupply, price);
@@ -119,7 +119,7 @@ contract ShrugSale is Exponential {
      * @dev Buy Function in USDT
      * @param _count Count of tokens to buy
      */
-    function buyInUSDT(uint256 _count) external payable {
+    function buyInUSDT(uint256 _count) external {
         require(
             _count < 100,
             "ShrugSale: Count should be less than 100"
@@ -139,17 +139,17 @@ contract ShrugSale is Exponential {
             "ShrugSale: Caller has not allowed enough USDT balance"
         );
 
-        for(uint256 i = 0; i < _count; i++) {
-            totalSupply++;
-            token.mint(msg.sender, totalSupply);
-        }
-
         for(uint256 i = 0; i < recipients.length; i++) {
             bool transferSuccess = USDTToken.transferFrom(msg.sender, recipients[i], price / recipients.length);
             require(
                 transferSuccess,
                 "ShrugSale: failed to transfer"
             );
+        }
+
+        for(uint256 i = 0; i < _count; i++) {
+            totalSupply++;
+            token.mint(msg.sender, totalSupply);
         }
 
         emit TokenBought(msg.sender, totalSupply, price);
@@ -159,7 +159,7 @@ contract ShrugSale is Exponential {
      * @dev Buy Function in STMX
      * @param _count Count of tokens to buy
      */
-    function buyInSTMX(uint256 _count) external payable {
+    function buyInSTMX(uint256 _count) external {
         require(
             _count < 100,
             "ShrugSale: Count should be less than 100"
@@ -179,17 +179,17 @@ contract ShrugSale is Exponential {
             "ShrugSale: Caller has not allowed enough STMX balance"
         );
 
-        for(uint256 i = 0; i < _count; i++) {
-            totalSupply++;
-            token.mint(msg.sender, totalSupply);
-        }
-
         for(uint256 i = 0; i < recipients.length; i++) {
             bool transferSuccess = STMXToken.transferFrom(msg.sender, recipients[i], price / recipients.length);
             require(
                 transferSuccess,
                 "ShrugSale: failed to transfer"
             );
+        }
+
+        for(uint256 i = 0; i < _count; i++) {
+            totalSupply++;
+            token.mint(msg.sender, totalSupply);
         }
 
         emit TokenBought(msg.sender, totalSupply, price);
