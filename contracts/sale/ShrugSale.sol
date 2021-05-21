@@ -23,7 +23,8 @@ contract ShrugSale is Exponential {
     event TokenBought(
         address buyer,
         uint256 tokenId,
-        uint256 value
+        uint256 value,
+        string currency
     );
 
     /// @notice addresses of recipients who received the funds
@@ -112,7 +113,7 @@ contract ShrugSale is Exponential {
             token.mint(msg.sender, totalSupply);
         }
 
-        emit TokenBought(msg.sender, totalSupply, price);
+        emit TokenBought(msg.sender, totalSupply, price, "ETH");
     }
 
     /**
@@ -152,7 +153,7 @@ contract ShrugSale is Exponential {
             token.mint(msg.sender, totalSupply);
         }
 
-        emit TokenBought(msg.sender, totalSupply, price);
+        emit TokenBought(msg.sender, totalSupply, price, "USDT");
     }
 
     /**
@@ -192,7 +193,7 @@ contract ShrugSale is Exponential {
             token.mint(msg.sender, totalSupply);
         }
 
-        emit TokenBought(msg.sender, totalSupply, price);
+        emit TokenBought(msg.sender, totalSupply, price, "STMX");
     }
 
     /**
