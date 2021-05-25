@@ -92,7 +92,8 @@ contract("ShrugSale", (accounts) => {
             const recipient1Balance = new BN(await web3.eth.getBalance(accounts[8]));
             const recipient2Balance = new BN(await web3.eth.getBalance(accounts[9]));
 
-            assert.equal(await shrugtoken_contract.ownerOf(2), accounts[1]);
+            assert.equal(await shrugtoken_contract.ownerOf(500), accounts[1]);
+            assert.equal(await shrugtoken_contract.ownerOf(499), accounts[1]);
             assert.equal(recipient1Balance.sub(recipient1BeforeBalance).toString(), value.div(new BN('2')).toString());
             assert.equal(recipient2Balance.sub(recipient2BeforeBalance).toString(), value.div(new BN('2')).toString());
         });
@@ -110,7 +111,7 @@ contract("ShrugSale", (accounts) => {
             const recipient1Balance = new BN(await web3.eth.getBalance(accounts[8]));
             const recipient2Balance = new BN(await web3.eth.getBalance(accounts[9]));
 
-            assert.equal(await shrugtoken_contract.ownerOf(3), accounts[3]);
+            assert.equal(await shrugtoken_contract.ownerOf(498), accounts[3]);
             assert.equal(recipient1Balance.sub(recipient1BeforeBalance).toString(), value.div(new BN('2')).toString());
             assert.equal(recipient2Balance.sub(recipient2BeforeBalance).toString(), value.div(new BN('2')).toString());
         });
@@ -165,7 +166,7 @@ contract("ShrugSale", (accounts) => {
             const recipient1Balance = new BN(await usdt_contract.balanceOf(accounts[8]));
             const recipient2Balance = new BN(await usdt_contract.balanceOf(accounts[9]));
 
-            assert.equal(await shrugtoken_contract.ownerOf(4), accounts[0]);
+            assert.equal(await shrugtoken_contract.ownerOf(497), accounts[0]);
             assert.equal(recipient1Balance.sub(recipient1BeforeBalance).toString(), value.div(new BN('2')));
             assert.equal(recipient2Balance.sub(recipient2BeforeBalance).toString(), value.div(new BN('2')));
         });
@@ -220,7 +221,7 @@ contract("ShrugSale", (accounts) => {
             const recipient1Balance = new BN(await stmx_contract.balanceOf(accounts[8]));
             const recipient2Balance = new BN(await stmx_contract.balanceOf(accounts[9]));
 
-            assert.equal(await shrugtoken_contract.ownerOf(5), accounts[0]);
+            assert.equal(await shrugtoken_contract.ownerOf(496), accounts[0]);
             assert.equal(recipient1Balance.sub(recipient1BeforeBalance).toString(), value.div(new BN('2')));
             assert.equal(recipient2Balance.sub(recipient2BeforeBalance).toString(), value.div(new BN('2')));
         });

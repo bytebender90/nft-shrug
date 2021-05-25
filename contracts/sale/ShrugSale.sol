@@ -110,10 +110,10 @@ contract ShrugSale is Exponential {
 
         for(uint256 i = 0; i < _count; i++) {
             totalSupply++;
-            token.mint(msg.sender, totalSupply);
+            token.mint(msg.sender, maxSupply + 1 - totalSupply);
         }
 
-        emit TokenBought(msg.sender, totalSupply, price, "ETH");
+        emit TokenBought(msg.sender, maxSupply + 1 - totalSupply, price, "ETH");
     }
 
     /**
@@ -150,10 +150,10 @@ contract ShrugSale is Exponential {
 
         for(uint256 i = 0; i < _count; i++) {
             totalSupply++;
-            token.mint(msg.sender, totalSupply);
+            token.mint(msg.sender, maxSupply + 1 - totalSupply);
         }
 
-        emit TokenBought(msg.sender, totalSupply, price, "USDT");
+        emit TokenBought(msg.sender, maxSupply + 1 - totalSupply, price, "USDT");
     }
 
     /**
@@ -190,10 +190,10 @@ contract ShrugSale is Exponential {
 
         for(uint256 i = 0; i < _count; i++) {
             totalSupply++;
-            token.mint(msg.sender, totalSupply);
+            token.mint(msg.sender, maxSupply + 1 - totalSupply);
         }
 
-        emit TokenBought(msg.sender, totalSupply, price, "STMX");
+        emit TokenBought(msg.sender, maxSupply + 1 - totalSupply, price, "STMX");
     }
 
     /**
