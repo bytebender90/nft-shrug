@@ -67,8 +67,8 @@ contract ShrugSale is Exponential {
             "ShrugSale: Empty array is provided"
         );
         require(
-            _recipients.length <= 50,
-            "ShrugSale: Count of recipients can't exceed 50"
+            _recipients.length <= 2,
+            "ShrugSale: Count of recipients can't exceed 2"
         );
         
         for(uint256 i = 0; i < _recipients.length; i++) {
