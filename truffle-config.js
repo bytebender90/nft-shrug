@@ -14,9 +14,9 @@ module.exports = {
             provider: () =>
                 new HDWalletProvider(
                     secretTestnet.mnemonic,
-                    `https://ropsten.infura.io/v3/${secretTestnet.infura_api_key}`
+                    `https://rinkeby.infura.io/v3/${secretTestnet.infura_api_key}`
                 ),
-            network_id: 3,
+            network_id: 4,
             confirmations: 0,
             timeoutBlocks: 500,
             skipDryRun: true,
