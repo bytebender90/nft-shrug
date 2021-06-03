@@ -27,11 +27,11 @@ contract("ShrugSale", (accounts) => {
             shrugsale_contract = instance;
         });
 
-        await shrugtoken_contract.addMinter(shrugsale_contract.address, {from: accounts[0]});
+        await shrugtoken_contract.addMinter(shrugsale_contract.address, { from: accounts[0] });
         await shrugsale_contract.setRecipients([
             accounts[8],
             accounts[9]
-        ], {from: accounts[0]});
+        ], { from: accounts[0] });
 
         await USDT.new(
             { from: accounts[0] }
@@ -61,6 +61,15 @@ contract("ShrugSale", (accounts) => {
     });
 
     describe("Sale", () => {
+        // it("Price List", async () => {
+        //     let sum = new BN('0');
+        //     for (let i = 0; i < 500; i++) {
+        //         let res = new BN(await shrugsale_contract.calculatePrice(i, 0));
+        //         sum = sum.add(res);
+        //         console.log(i + 1, res.toString());
+        //     }
+        //     console.log('total', sum.toString());
+        // });
         it("buy is not working with insuffient balance", async () => {
             let value = new BN('10');
             let thrownError;

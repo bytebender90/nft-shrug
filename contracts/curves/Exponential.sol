@@ -18,12 +18,12 @@ contract Exponential is Ownable {
         returns (uint256)
     {
         if(currency == 0)
-            return  decimals / 10 ** 8 * 120048 * (totalSupply + 1) ** 2;
+            return  decimals * 20477 * (totalSupply + 1) ** 11 / 10 ** 32 + decimals * 2 / 100;
 
         if(currency == 1)
-            return  decimals / 10 ** 8 * 120048 * (totalSupply + 1) ** 2 * decimals / uint256(ETHUSDTAggregator.latestAnswer()) / 10 ** 12;
+            return (decimals * 20477 * (totalSupply + 1) ** 11 / 10 ** 32 + decimals * 2 / 100) * decimals / uint256(ETHUSDTAggregator.latestAnswer()) / 10 ** 12;
             
-        return  decimals / 10 ** 8 * 120048 * (totalSupply + 1) ** 2 * decimals / uint256(ETHSTMXAggregator.latestAnswer());
+        return (decimals * 20477 * (totalSupply + 1) ** 11 / 10 ** 32 + decimals * 2 / 100) * decimals / uint256(ETHSTMXAggregator.latestAnswer());
     }
 
     /**
