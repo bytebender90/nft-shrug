@@ -27,12 +27,6 @@ contract("ShrugSale", (accounts) => {
             shrugsale_contract = instance;
         });
 
-        await shrugtoken_contract.addMinter(shrugsale_contract.address, { from: accounts[0] });
-        await shrugsale_contract.setRecipients([
-            accounts[8],
-            accounts[9]
-        ], { from: accounts[0] });
-
         await USDT.new(
             { from: accounts[0] }
         ).then((instance) => {
@@ -53,23 +47,188 @@ contract("ShrugSale", (accounts) => {
         ).then((instance) => {
             eth_stmx_aggregator_contract = instance;
         });
-
-        await shrugsale_contract.setUSDTTokenContract(usdt_contract.address);
-        await shrugsale_contract.setSTMXTokenContract(stmx_contract.address);
-        await shrugsale_contract.setETHUSDTAggregatorContract(eth_usdt_aggregator_contract.address);
-        await shrugsale_contract.setETHSTMXAggregatorContract(eth_stmx_aggregator_contract.address);
     });
 
+    describe("Shrug Sale Setting", () => {
+        it("setting USDT token contract is not working if the caller is not the owner", async () => {
+            let thrownError;
+            try {
+                await shrugsale_contract.setUSDTTokenContract(
+                    usdt_contract.address,
+                    {from: accounts[1]}
+                );
+            } catch (error) {
+                thrownError = error;
+            }
+
+            assert.include(
+                thrownError.message,
+                'Ownable: caller is not the owner',
+            )
+        })
+        it("setting USDT token contract is working if the caller is the owner", async () => {
+            await shrugsale_contract.setUSDTTokenContract(
+                usdt_contract.address,
+                {from: accounts[0]}
+            );
+        })
+        it("setting STMX token contract is not working if the caller is not the owner", async () => {
+            let thrownError;
+            try {
+                await shrugsale_contract.setSTMXTokenContract(
+                    stmx_contract.address,
+                    {from: accounts[1]}
+                );
+            } catch (error) {
+                thrownError = error;
+            }
+
+            assert.include(
+                thrownError.message,
+                'Ownable: caller is not the owner',
+            )
+        })
+        it("setting STMX token contract is working if the caller is the owner", async () => {
+            await shrugsale_contract.setSTMXTokenContract(
+                stmx_contract.address,
+                {from: accounts[0]}
+            );
+        })
+        it("setting USDT aggregator contract is not working if the caller is not the owner", async () => {
+            let thrownError;
+            try {
+                await shrugsale_contract.setETHUSDTAggregatorContract(
+                    eth_usdt_aggregator_contract.address,
+                    {from: accounts[1]}
+                );
+            } catch (error) {
+                thrownError = error;
+            }
+
+            assert.include(
+                thrownError.message,
+                'Ownable: caller is not the owner',
+            )
+        })
+        it("setting USDT aggregator contract is working if the caller is the owner", async () => {
+            await shrugsale_contract.setETHUSDTAggregatorContract(
+                eth_usdt_aggregator_contract.address,
+                {from: accounts[0]}
+            );
+        })
+        it("setting STMX aggregator contract is not working if the caller is not the owner", async () => {
+            let thrownError;
+            try {
+                await shrugsale_contract.setETHSTMXAggregatorContract(
+                    eth_stmx_aggregator_contract.address,
+                    {from: accounts[1]}
+                );
+            } catch (error) {
+                thrownError = error;
+            }
+
+            assert.include(
+                thrownError.message,
+                'Ownable: caller is not the owner',
+            )
+        })
+        it("setting STMX aggregator contract is working if the caller is the owner", async () => {
+            await shrugsale_contract.setETHSTMXAggregatorContract(
+                eth_stmx_aggregator_contract.address,
+                {from: accounts[0]}
+            );
+        })
+        it("setting recipients is not working if the caller is not the owner", async () => {
+            let thrownError;
+            try {
+                await shrugsale_contract.setRecipients([
+                    accounts[8],
+                    accounts[9]
+                ], { from: accounts[1] });
+            } catch (error) {
+                thrownError = error;
+            }
+
+            assert.include(
+                thrownError.message,
+                'Ownable: caller is not the owner',
+            )
+        })
+        it("setting recipients is working if the caller is the owner", async () => {
+            await shrugsale_contract.setRecipients([
+                accounts[8],
+                accounts[9]
+            ], { from: accounts[0] });
+        })
+        it("adding minter is not working if the caller is not the owner", async () => {
+            let thrownError;
+            try {
+                await shrugtoken_contract.addMinter(shrugsale_contract.address, { from: accounts[1] });
+            } catch (error) {
+                thrownError = error;
+            }
+
+            assert.include(
+                thrownError.message,
+                'Ownable: caller is not the admin',
+            )
+        })
+        it("adding minter is working if the caller is the owner", async () => {
+            await shrugtoken_contract.addMinter(shrugsale_contract.address, { from: accounts[0] });;
+        })
+    })
+
+    describe("Price List", () => {
+        it("ETH", async () => {
+            let sum = new BN('0');
+            for (let i = 0; i < 500; i++) {
+                let res = new BN(await shrugsale_contract.calculatePrice(i, 0));
+                sum = sum.add(res);
+                console.log(i + 1, res.toString());
+            }
+            console.log('total', sum.toString());
+        });
+        it("USDT", async () => {
+            let sum = new BN('0');
+            for (let i = 0; i < 500; i++) {
+                let res = new BN(await shrugsale_contract.calculatePrice(i, 1));
+                sum = sum.add(res);
+                console.log(i + 1, res.toString());
+            }
+            console.log('total', sum.toString());
+        });
+        it("STMX", async () => {
+            let sum = new BN('0');
+            for (let i = 0; i < 500; i++) {
+                let res = new BN(await shrugsale_contract.calculatePrice(i, 2));
+                sum = sum.add(res);
+                console.log(i + 1, res.toString());
+            }
+            console.log('total', sum.toString());
+        });
+    });
+
+    describe("Shrug Token", () => {
+        it("mint is not working if caller is not the sale contract", async () => {
+            let thrownError;
+            try {
+                await shrugtoken_contract.mint(
+                    accounts[9],
+                    100,
+                    { from: accounts[8] }
+                );
+            } catch (error) {
+                thrownError = error;
+            }
+
+            assert.include(
+                thrownError.message,
+                'Ownable: caller is not the minter',
+            )
+        })
+    })
+
     describe("Sale", () => {
-        // it("Price List", async () => {
-        //     let sum = new BN('0');
-        //     for (let i = 0; i < 500; i++) {
-        //         let res = new BN(await shrugsale_contract.calculatePrice(i, 0));
-        //         sum = sum.add(res);
-        //         console.log(i + 1, res.toString());
-        //     }
-        //     console.log('total', sum.toString());
-        // });
         it("buy is not working with insuffient balance", async () => {
             let value = new BN('10');
             let thrownError;
@@ -231,6 +390,121 @@ contract("ShrugSale", (accounts) => {
             const recipient2Balance = new BN(await stmx_contract.balanceOf(accounts[9]));
 
             assert.equal(await shrugtoken_contract.ownerOf(496), accounts[0]);
+            assert.equal(recipient1Balance.sub(recipient1BeforeBalance).toString(), value.div(new BN('2')));
+            assert.equal(recipient2Balance.sub(recipient2BeforeBalance).toString(), value.div(new BN('2')));
+        });
+        it("buy is working with STMX", async () => {
+            let value = new BN(await shrugsale_contract.getPrice(99,2));
+
+            const recipient1BeforeBalance = new BN(await stmx_contract.balanceOf(accounts[8]));
+            const recipient2BeforeBalance = new BN(await stmx_contract.balanceOf(accounts[9]));
+
+            await stmx_contract.approve(shrugsale_contract.address, value, {from: accounts[0]});
+            await shrugsale_contract.buyInSTMX(
+                99,
+                { from: accounts[0] }
+            );
+
+            const recipient1Balance = new BN(await stmx_contract.balanceOf(accounts[8]));
+            const recipient2Balance = new BN(await stmx_contract.balanceOf(accounts[9]));
+
+            assert.equal(await shrugtoken_contract.ownerOf(393), accounts[0]);
+            assert.equal(recipient1Balance.sub(recipient1BeforeBalance).toString(), value.div(new BN('2')));
+            assert.equal(recipient2Balance.sub(recipient2BeforeBalance).toString(), value.div(new BN('2')));
+        });
+        it("buy is working with STMX", async () => {
+            let value = new BN(await shrugsale_contract.getPrice(99,2));
+
+            const recipient1BeforeBalance = new BN(await stmx_contract.balanceOf(accounts[8]));
+            const recipient2BeforeBalance = new BN(await stmx_contract.balanceOf(accounts[9]));
+
+            await stmx_contract.approve(shrugsale_contract.address, value, {from: accounts[0]});
+            await shrugsale_contract.buyInSTMX(
+                99,
+                { from: accounts[0] }
+            );
+
+            const recipient1Balance = new BN(await stmx_contract.balanceOf(accounts[8]));
+            const recipient2Balance = new BN(await stmx_contract.balanceOf(accounts[9]));
+
+            assert.equal(await shrugtoken_contract.ownerOf(294), accounts[0]);
+            assert.equal(recipient1Balance.sub(recipient1BeforeBalance).toString(), value.div(new BN('2')));
+            assert.equal(recipient2Balance.sub(recipient2BeforeBalance).toString(), value.div(new BN('2')));
+        });
+        it("buy is working with USDT", async () => {
+            let value = new BN(await shrugsale_contract.getPrice(99,1));
+
+            const recipient1BeforeBalance = new BN(await usdt_contract.balanceOf(accounts[8]));
+            const recipient2BeforeBalance = new BN(await usdt_contract.balanceOf(accounts[9]));
+
+            await usdt_contract.approve(shrugsale_contract.address, value, {from: accounts[0]});
+            await shrugsale_contract.buyInUSDT(
+                99,
+                { from: accounts[0] }
+            );
+
+            const recipient1Balance = new BN(await usdt_contract.balanceOf(accounts[8]));
+            const recipient2Balance = new BN(await usdt_contract.balanceOf(accounts[9]));
+
+            assert.equal(await shrugtoken_contract.ownerOf(195), accounts[0]);
+            assert.equal(recipient1Balance.sub(recipient1BeforeBalance).toString(), value.div(new BN('2')));
+            assert.equal(recipient2Balance.sub(recipient2BeforeBalance).toString(), value.div(new BN('2')));
+        });
+        it("buy is working with USDT", async () => {
+            let value = new BN(await shrugsale_contract.getPrice(99,1));
+
+            const recipient1BeforeBalance = new BN(await usdt_contract.balanceOf(accounts[8]));
+            const recipient2BeforeBalance = new BN(await usdt_contract.balanceOf(accounts[9]));
+
+            await usdt_contract.approve(shrugsale_contract.address, value, {from: accounts[0]});
+            await shrugsale_contract.buyInUSDT(
+                99,
+                { from: accounts[0] }
+            );
+
+            const recipient1Balance = new BN(await usdt_contract.balanceOf(accounts[8]));
+            const recipient2Balance = new BN(await usdt_contract.balanceOf(accounts[9]));
+
+            assert.equal(await shrugtoken_contract.ownerOf(96), accounts[0]);
+            assert.equal(recipient1Balance.sub(recipient1BeforeBalance).toString(), value.div(new BN('2')));
+            assert.equal(recipient2Balance.sub(recipient2BeforeBalance).toString(), value.div(new BN('2')));
+        });
+        it("buy is not working if there isn't enough token", async () => {
+            let value = new BN(await shrugsale_contract.getPrice(96,1));
+
+            await usdt_contract.approve(shrugsale_contract.address, value, {from: accounts[0]});
+
+            let thrownError;
+            try {
+                await shrugsale_contract.buyInUSDT(
+                    96,
+                    { from: accounts[0] }
+                );
+            } catch (error) {
+                thrownError = error;
+            }
+
+            assert.include(
+                thrownError.message,
+                'ShrugSale: All tokens are minted',
+            )
+        });
+        it("buy is working with USDT", async () => {
+            let value = new BN(await shrugsale_contract.getPrice(95,1));
+
+            const recipient1BeforeBalance = new BN(await usdt_contract.balanceOf(accounts[8]));
+            const recipient2BeforeBalance = new BN(await usdt_contract.balanceOf(accounts[9]));
+
+            await usdt_contract.approve(shrugsale_contract.address, value, {from: accounts[0]});
+            await shrugsale_contract.buyInUSDT(
+                95,
+                { from: accounts[0] }
+            );
+
+            const recipient1Balance = new BN(await usdt_contract.balanceOf(accounts[8]));
+            const recipient2Balance = new BN(await usdt_contract.balanceOf(accounts[9]));
+
+            assert.equal(await shrugtoken_contract.ownerOf(1), accounts[0]);
             assert.equal(recipient1Balance.sub(recipient1BeforeBalance).toString(), value.div(new BN('2')));
             assert.equal(recipient2Balance.sub(recipient2BeforeBalance).toString(), value.div(new BN('2')));
         });
