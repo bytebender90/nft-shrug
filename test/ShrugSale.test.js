@@ -7,6 +7,20 @@ const ETHSTMXAggregator = artifacts.require("ETHSTMXAggregator");
 
 const { BN } = require("web3-utils");
 
+const calculatePrice = (
+    totalSupply,
+    currency
+) => {
+    const decimals = new BN('1000000000000000000');
+    if(currency == 0)
+        return  (decimals.mul(new BN(20477)).mul(new BN(totalSupply + 1).pow(new BN(11))).div(new BN('100000000000000000000000000000000'))).add(decimals.mul(new BN(2)).div(new BN(100)));
+
+    if(currency == 1)
+        return  ((decimals.mul(new BN(20477)).mul(new BN(totalSupply + 1).pow(new BN(11))).div(new BN('100000000000000000000000000000000'))).add(decimals.mul(new BN(2)).div(new BN(100)))).mul(decimals).div(new BN('250000000000000')).div(new BN('1000000000000'));
+        
+    return  (decimals.mul(new BN(20477)).mul(new BN(totalSupply + 1).pow(new BN(11))).div(new BN('100000000000000000000000000000000'))).add(decimals.mul(new BN(2)).div(new BN(100))).mul(decimals).div(new BN('9373225713169'));
+}
+
 contract("ShrugSale", (accounts) => {
     let shrugtoken_contract, shrugsale_contract, usdt_contract, stmx_contract, eth_usdt_aggregator_contract, eth_stmx_aggregator_contract;
 
@@ -180,31 +194,22 @@ contract("ShrugSale", (accounts) => {
 
     describe("Price List", () => {
         it("ETH", async () => {
-            let sum = new BN('0');
             for (let i = 0; i < 500; i++) {
                 let res = new BN(await shrugsale_contract.calculatePrice(i, 0));
-                sum = sum.add(res);
-                console.log(i + 1, res.toString());
+                assert.equal(res.toString(), new BN(calculatePrice(i, 0)).toString())
             }
-            console.log('total', sum.toString());
         });
         it("USDT", async () => {
-            let sum = new BN('0');
             for (let i = 0; i < 500; i++) {
                 let res = new BN(await shrugsale_contract.calculatePrice(i, 1));
-                sum = sum.add(res);
-                console.log(i + 1, res.toString());
+                assert.equal(res.toString(), new BN(calculatePrice(i, 1)).toString())
             }
-            console.log('total', sum.toString());
         });
         it("STMX", async () => {
-            let sum = new BN('0');
             for (let i = 0; i < 500; i++) {
                 let res = new BN(await shrugsale_contract.calculatePrice(i, 2));
-                sum = sum.add(res);
-                console.log(i + 1, res.toString());
+                assert.equal(res.toString(), new BN(calculatePrice(i, 2)).toString())
             }
-            console.log('total', sum.toString());
         });
     });
 
