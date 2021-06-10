@@ -2,8 +2,9 @@ const ShrugToken = artifacts.require("ShrugToken");
 const ShrugSale = artifacts.require("ShrugSale");
 const USDT = artifacts.require("USDT");
 const STMX = artifacts.require("STMX");
-const ETHUSDTAggregator = artifacts.require("ETHUSDTAggregator");
-const ETHSTMXAggregator = artifacts.require("ETHSTMXAggregator");
+const ETHUSDAggregator = artifacts.require("ETHUSDAggregator");
+const USDTUSDAggregator = artifacts.require("USDTUSDAggregator");
+const STMXUSDAggregator = artifacts.require("STMXUSDAggregator");
 
 const { BN } = require("web3-utils");
 
@@ -16,13 +17,13 @@ const calculatePrice = (
         return  (decimals.mul(new BN(20477)).mul(new BN(totalSupply + 1).pow(new BN(11))).div(new BN('100000000000000000000000000000000'))).add(decimals.mul(new BN(2)).div(new BN(100)));
 
     if(currency == 1)
-        return  ((decimals.mul(new BN(20477)).mul(new BN(totalSupply + 1).pow(new BN(11))).div(new BN('100000000000000000000000000000000'))).add(decimals.mul(new BN(2)).div(new BN(100)))).mul(decimals).div(new BN('250000000000000')).div(new BN('1000000000000'));
+        return  ((decimals.mul(new BN(20477)).mul(new BN(totalSupply + 1).pow(new BN(11))).div(new BN('100000000000000000000000000000000'))).add(decimals.mul(new BN(2)).div(new BN(100)))).mul(new BN('250729030969')).div(new BN('100142638')).div(new BN('1000000000000'));
         
-    return  (decimals.mul(new BN(20477)).mul(new BN(totalSupply + 1).pow(new BN(11))).div(new BN('100000000000000000000000000000000'))).add(decimals.mul(new BN(2)).div(new BN(100))).mul(decimals).div(new BN('9373225713169'));
+    return  (decimals.mul(new BN(20477)).mul(new BN(totalSupply + 1).pow(new BN(11))).div(new BN('100000000000000000000000000000000'))).add(decimals.mul(new BN(2)).div(new BN(100))).mul(new BN('250729030969')).div(new BN('2181088'));
 }
 
 contract("ShrugSale", (accounts) => {
-    let shrugtoken_contract, shrugsale_contract, usdt_contract, stmx_contract, eth_usdt_aggregator_contract, eth_stmx_aggregator_contract;
+    let shrugtoken_contract, shrugsale_contract, usdt_contract, stmx_contract, eth_usd_aggregator_contract,usdt_usd_aggregator_contract , stmx_usd_aggregator_contract;
 
     before(async () => {
         await ShrugToken.new(
@@ -51,15 +52,20 @@ contract("ShrugSale", (accounts) => {
         ).then((instance) => {
             stmx_contract = instance;
         });
-        await ETHUSDTAggregator.new(
+        await ETHUSDAggregator.new(
             { from: accounts[0] }
         ).then((instance) => {
-            eth_usdt_aggregator_contract = instance;
+            eth_usd_aggregator_contract = instance;
         });
-        await ETHSTMXAggregator.new(
+        await USDTUSDAggregator.new(
             { from: accounts[0] }
         ).then((instance) => {
-            eth_stmx_aggregator_contract = instance;
+            usdt_usd_aggregator_contract = instance;
+        });
+        await STMXUSDAggregator.new(
+            { from: accounts[0] }
+        ).then((instance) => {
+            stmx_usd_aggregator_contract = instance;
         });
     });
 
@@ -108,11 +114,11 @@ contract("ShrugSale", (accounts) => {
                 {from: accounts[0]}
             );
         })
-        it("setting USDT aggregator contract is not working if the caller is not the owner", async () => {
+        it("setting ETH / USD aggregator contract is not working if the caller is not the owner", async () => {
             let thrownError;
             try {
-                await shrugsale_contract.setETHUSDTAggregatorContract(
-                    eth_usdt_aggregator_contract.address,
+                await shrugsale_contract.setETHUSDAggregatorContract(
+                    eth_usd_aggregator_contract.address,
                     {from: accounts[1]}
                 );
             } catch (error) {
@@ -124,17 +130,17 @@ contract("ShrugSale", (accounts) => {
                 'Ownable: caller is not the owner',
             )
         })
-        it("setting USDT aggregator contract is working if the caller is the owner", async () => {
-            await shrugsale_contract.setETHUSDTAggregatorContract(
-                eth_usdt_aggregator_contract.address,
+        it("setting ETH / USD aggregator contract is working if the caller is the owner", async () => {
+            await shrugsale_contract.setETHUSDAggregatorContract(
+                eth_usd_aggregator_contract.address,
                 {from: accounts[0]}
             );
         })
-        it("setting STMX aggregator contract is not working if the caller is not the owner", async () => {
+        it("setting STMX / USD aggregator contract is not working if the caller is not the owner", async () => {
             let thrownError;
             try {
-                await shrugsale_contract.setETHSTMXAggregatorContract(
-                    eth_stmx_aggregator_contract.address,
+                await shrugsale_contract.setSTMXUSDAggregatorContract(
+                    stmx_usd_aggregator_contract.address,
                     {from: accounts[1]}
                 );
             } catch (error) {
@@ -146,9 +152,31 @@ contract("ShrugSale", (accounts) => {
                 'Ownable: caller is not the owner',
             )
         })
-        it("setting STMX aggregator contract is working if the caller is the owner", async () => {
-            await shrugsale_contract.setETHSTMXAggregatorContract(
-                eth_stmx_aggregator_contract.address,
+        it("setting STMX / USD aggregator contract is working if the caller is the owner", async () => {
+            await shrugsale_contract.setSTMXUSDAggregatorContract(
+                stmx_usd_aggregator_contract.address,
+                {from: accounts[0]}
+            );
+        })
+        it("setting USDT / USD aggregator contract is not working if the caller is not the owner", async () => {
+            let thrownError;
+            try {
+                await shrugsale_contract.setUSDTUSDAggregatorContract(
+                    usdt_usd_aggregator_contract.address,
+                    {from: accounts[1]}
+                );
+            } catch (error) {
+                thrownError = error;
+            }
+
+            assert.include(
+                thrownError.message,
+                'Ownable: caller is not the owner',
+            )
+        })
+        it("setting USDT / USD aggregator contract is working if the caller is the owner", async () => {
+            await shrugsale_contract.setUSDTUSDAggregatorContract(
+                usdt_usd_aggregator_contract.address,
                 {from: accounts[0]}
             );
         })

@@ -7,8 +7,9 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract Exponential is Ownable {
     uint256 constant public decimals = 10**18;
 
-    IAggregator public ETHUSDTAggregator;
-    IAggregator public ETHSTMXAggregator;
+    IAggregator public ETHUSDAggregator;
+    IAggregator public USDTUSDAggregator;
+    IAggregator public STMXUSDAggregator;
 
     function calculatePrice(
         uint256 totalSupply,
@@ -21,24 +22,32 @@ contract Exponential is Ownable {
             return  decimals * 20477 * (totalSupply + 1) ** 11 / 10 ** 32 + decimals * 2 / 100;
 
         if(currency == 1)
-            return (decimals * 20477 * (totalSupply + 1) ** 11 / 10 ** 32 + decimals * 2 / 100) * decimals / uint256(ETHUSDTAggregator.latestAnswer()) / 10 ** 12;
+            return (decimals * 20477 * (totalSupply + 1) ** 11 / 10 ** 32 + decimals * 2 / 100) * uint256(ETHUSDAggregator.latestAnswer()) / uint256(USDTUSDAggregator.latestAnswer()) / 10 ** 12;
             
-        return (decimals * 20477 * (totalSupply + 1) ** 11 / 10 ** 32 + decimals * 2 / 100) * decimals / uint256(ETHSTMXAggregator.latestAnswer());
+        return (decimals * 20477 * (totalSupply + 1) ** 11 / 10 ** 32 + decimals * 2 / 100) * uint256(ETHUSDAggregator.latestAnswer()) / uint256(STMXUSDAggregator.latestAnswer());
     }
 
     /**
-     * @dev Owner can set ETH / USDT Aggregator contract
+     * @dev Owner can set ETH / USD Aggregator contract
      * @param _addr Address of aggregator contract
      */
-    function setETHUSDTAggregatorContract(address _addr) public onlyOwner {
-        ETHUSDTAggregator = IAggregator(address(_addr));
+    function setETHUSDAggregatorContract(address _addr) public onlyOwner {
+        ETHUSDAggregator = IAggregator(address(_addr));
     }
 
     /**
-     * @dev Owner can set ETH / STMX Aggregator contract
+     * @dev Owner can set USDT / USD Aggregator contract
      * @param _addr Address of aggregator contract
      */
-    function setETHSTMXAggregatorContract(address _addr) public onlyOwner {
-        ETHSTMXAggregator = IAggregator(address(_addr));
+    function setUSDTUSDAggregatorContract(address _addr) public onlyOwner {
+        USDTUSDAggregator = IAggregator(address(_addr));
+    }
+
+    /**
+     * @dev Owner can set STMX / USD Aggregator contract
+     * @param _addr Address of aggregator contract
+     */
+    function setSTMXUSDAggregatorContract(address _addr) public onlyOwner {
+        STMXUSDAggregator = IAggregator(address(_addr));
     }
 }
