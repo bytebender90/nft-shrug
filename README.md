@@ -40,9 +40,11 @@ $ npm install
   "recipient2_address": "",
   "usdt_token_address": "",
   "stmx_token_address": "",
-  "eth_usdt_aggregator_address": "",
-  "eth_stmx_aggregator_address": ""
+  "eth_usd_aggregator_address": "",
+  "stmx_usd_aggregator_address": "",
+  "usdt_usd_aggregator_address": ""
 }
+
 ```
 
 ### Deploy to Local Machine
