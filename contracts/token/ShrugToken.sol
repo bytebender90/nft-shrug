@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.0;
+pragma solidity 0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "../role/MinterRole.sol";
@@ -13,6 +13,12 @@ contract ShrugToken is MinterRole, ERC721 {
 
     // Base URI
     string private baseURI;
+
+    /// @notice max supply of token
+    uint256 public constant maxSupply = 500;
+
+    /// @notice total supply of token
+    uint256 public totalSupply;
 
     /**
      * @dev Constructor function
@@ -53,22 +59,15 @@ contract ShrugToken is MinterRole, ERC721 {
     /**
      * @dev Mint token function
      * @param to Address of owner
-     * @param tokenId Id of the token
      */
     function mint(
-        address to,
-        uint256 tokenId
+        address to
     ) external onlyMinter {
-        _mint(to, tokenId);
-    }
-
-    /**
-     * @dev Burn token function
-     * @param tokenId Id of the token
-     */
-    function burn(
-        uint256 tokenId
-    ) external onlyMinter {
-        _burn(tokenId);
+        require(
+            totalSupply < maxSupply,
+            "ShrugToken: All tokens are minted"
+        );
+        totalSupply += 1;
+        _mint(to, maxSupply + 1 - totalSupply);
     }
 }

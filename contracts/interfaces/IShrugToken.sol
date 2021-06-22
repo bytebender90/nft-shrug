@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.0;
+pragma solidity 0.8.0;
 
 /**
  * @title Shrug ERC-721 Token Interface
@@ -13,11 +13,9 @@ interface IShrugToken {
     /**
      * @dev Mint function
      * @param to Address of owner
-     * @param tokenId Id of the token
      */
     function mint(
-        address to,
-        uint256 tokenId
+        address to
     ) external;
 
     /**
@@ -32,4 +30,7 @@ interface IShrugToken {
     function burn(
         uint256 tokenId
     ) external;
+
+    function totalSupply() external view returns (uint256);
+    function maxSupply() external view returns (uint256);
 }

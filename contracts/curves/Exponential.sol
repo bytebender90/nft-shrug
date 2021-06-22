@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.0;
+pragma solidity 0.8.0;
 
 import "../interfaces/IAggregator.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -21,10 +21,14 @@ contract Exponential is Ownable {
         if(currency == 0)
             return  decimals * 20477 * (totalSupply + 1) ** 11 / 10 ** 32 + decimals * 2 / 100;
 
+        (,int256 resETH,,,) = ETHUSDAggregator.latestRoundData();
+        (,int256 resUSDT,,,) = USDTUSDAggregator.latestRoundData();
         if(currency == 1)
-            return (decimals * 20477 * (totalSupply + 1) ** 11 / 10 ** 32 + decimals * 2 / 100) * uint256(ETHUSDAggregator.latestAnswer()) / uint256(USDTUSDAggregator.latestAnswer()) / 10 ** 12;
-            
-        return (decimals * 20477 * (totalSupply + 1) ** 11 / 10 ** 32 + decimals * 2 / 100) * uint256(ETHUSDAggregator.latestAnswer()) / uint256(STMXUSDAggregator.latestAnswer());
+            return (decimals * 20477 * (totalSupply + 1) ** 11 / 10 ** 32 + decimals * 2 / 100) * uint256(resETH) / uint256(resUSDT) / 10 ** 12;
+
+        (,int256 resSTMX,,,) = STMXUSDAggregator.latestRoundData();
+        
+        return (decimals * 20477 * (totalSupply + 1) ** 11 / 10 ** 32 + decimals * 2 / 100) * uint256(resETH) / uint256(resSTMX);
     }
 
     /**

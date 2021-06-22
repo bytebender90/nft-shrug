@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.0;
+pragma solidity 0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "../interfaces/IShrugToken.sol";
 import "../interfaces/IShrugToken.sol";
 import "../curves/Exponential.sol";
@@ -9,7 +10,7 @@ import "../curves/Exponential.sol";
 /**
  * @title Shrug Sale Contract
  */
-contract ShrugSale is Exponential {
+contract ShrugSale is Exponential, ReentrancyGuard {
 
     /// @notice Event emitted only on construction. To be used by indexers
     event ShrugSaleDeployed();
@@ -22,7 +23,8 @@ contract ShrugSale is Exponential {
     /// @notice Token bought event
     event TokenBought(
         address buyer,
-        uint256 tokenId,
+        uint256 firstTokenId,
+        uint256 lastTokenId,
         uint256 value,
         string currency
     );
@@ -32,12 +34,6 @@ contract ShrugSale is Exponential {
 
     /// @notice ERC721 NFT
     IShrugToken public token;
-
-    /// @notice max supply of token
-    uint256 public constant maxSupply = 500;
-
-    /// @notice total supply of token
-    uint256 public totalSupply;
 
     /// @notice USDT token contract
     IERC20 public USDTToken;
@@ -84,13 +80,13 @@ contract ShrugSale is Exponential {
      * @dev Buy Function in ETH
      * @param _count Count of tokens to buy
      */
-    function buyInETH(uint256 _count) external payable {
+    function buyInETH(uint256 _count) external payable nonReentrant {
         require(
             _count < 100,
             "ShrugSale: Count should be less than 100"
         );
         require(
-            (totalSupply + _count) <= maxSupply,
+            (token.totalSupply() + _count) <= token.maxSupply(),
             "ShrugSale: All tokens are minted"
         );
 
@@ -109,24 +105,23 @@ contract ShrugSale is Exponential {
         }
 
         for(uint256 i = 0; i < _count; i++) {
-            totalSupply++;
-            token.mint(msg.sender, maxSupply + 1 - totalSupply);
+            token.mint(msg.sender);
         }
 
-        emit TokenBought(msg.sender, maxSupply + 1 - totalSupply, price, "ETH");
+         emit TokenBought(msg.sender, token.maxSupply() + _count - token.totalSupply(), token.maxSupply() + 1 - token.totalSupply(), price, "ETH");
     }
 
     /**
      * @dev Buy Function in USDT
      * @param _count Count of tokens to buy
      */
-    function buyInUSDT(uint256 _count) external {
+    function buyInUSDT(uint256 _count) external nonReentrant {
         require(
             _count < 100,
             "ShrugSale: Count should be less than 100"
         );
         require(
-            (totalSupply + _count) <= maxSupply,
+            (token.totalSupply() + _count) <= token.maxSupply(),
             "ShrugSale: All tokens are minted"
         );
 
@@ -149,24 +144,23 @@ contract ShrugSale is Exponential {
         }
 
         for(uint256 i = 0; i < _count; i++) {
-            totalSupply++;
-            token.mint(msg.sender, maxSupply + 1 - totalSupply);
+            token.mint(msg.sender);
         }
 
-        emit TokenBought(msg.sender, maxSupply + 1 - totalSupply, price, "USDT");
+         emit TokenBought(msg.sender, token.maxSupply() + _count - token.totalSupply(), token.maxSupply() + 1 - token.totalSupply(), price, "USDT");
     }
 
     /**
      * @dev Buy Function in STMX
      * @param _count Count of tokens to buy
      */
-    function buyInSTMX(uint256 _count) external {
+    function buyInSTMX(uint256 _count) external nonReentrant {
         require(
             _count < 100,
             "ShrugSale: Count should be less than 100"
         );
         require(
-            (totalSupply + _count) <= maxSupply,
+            (token.totalSupply() + _count) <= token.maxSupply(),
             "ShrugSale: All tokens are minted"
         );
 
@@ -189,11 +183,10 @@ contract ShrugSale is Exponential {
         }
 
         for(uint256 i = 0; i < _count; i++) {
-            totalSupply++;
-            token.mint(msg.sender, maxSupply + 1 - totalSupply);
+            token.mint(msg.sender);
         }
 
-        emit TokenBought(msg.sender, maxSupply + 1 - totalSupply, price, "STMX");
+        emit TokenBought(msg.sender, token.maxSupply() + _count - token.totalSupply(), token.maxSupply() + 1 - token.totalSupply(), price, "STMX");
     }
 
     /**
@@ -207,7 +200,7 @@ contract ShrugSale is Exponential {
         );
         uint256 price;
         for(uint256 i = 0; i < _count; i++) {
-            price += calculatePrice(totalSupply + i, currency);
+            price += calculatePrice(token.totalSupply() + i, currency);
         }
 
         return price;

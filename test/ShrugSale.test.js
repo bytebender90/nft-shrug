@@ -247,7 +247,6 @@ contract("ShrugSale", (accounts) => {
             try {
                 await shrugtoken_contract.mint(
                     accounts[9],
-                    100,
                     { from: accounts[8] }
                 );
             } catch (error) {
