@@ -4,7 +4,6 @@ pragma solidity 0.8.0;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "../interfaces/IShrugToken.sol";
-import "../interfaces/IShrugToken.sol";
 import "../curves/Exponential.sol";
 
 /**
@@ -108,7 +107,7 @@ contract ShrugSale is Exponential, ReentrancyGuard {
             token.mint(msg.sender);
         }
 
-         emit TokenBought(msg.sender, token.maxSupply() + _count - token.totalSupply(), token.maxSupply() + 1 - token.totalSupply(), price, "ETH");
+        emit TokenBought(msg.sender, token.maxSupply() + _count - token.totalSupply(), token.maxSupply() + 1 - token.totalSupply(), price, "ETH");
     }
 
     /**
@@ -147,7 +146,7 @@ contract ShrugSale is Exponential, ReentrancyGuard {
             token.mint(msg.sender);
         }
 
-         emit TokenBought(msg.sender, token.maxSupply() + _count - token.totalSupply(), token.maxSupply() + 1 - token.totalSupply(), price, "USDT");
+        emit TokenBought(msg.sender, token.maxSupply() + _count - token.totalSupply(), token.maxSupply() + 1 - token.totalSupply(), price, "USDT");
     }
 
     /**
