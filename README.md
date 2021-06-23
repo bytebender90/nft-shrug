@@ -6,7 +6,7 @@ Smart contract for shurg nft experiment.
 #### 1. Shrug NFT for shrug images
 Each shrug image is represented by Shrug NFT which includes ownership, detailed information. The information of token is saved on IPFS as json format and it includes the IPFS uri of shrug image.
 ##### 2. Shrug Sale for selling tokens to users
-Users can buy Shrug NFT with ETH, STMX, USDT and the price of each token is calculated by contract which is based on exponential bonding curve logic. The max supply of Shrug NFT is 500 as contant.
+Users can buy Shrug NFT with ETH, STMX, USDT and the price of each token is calculated by contract which is based on exponential bonding curve logic. The max supply of Shrug NFT is 500 as constant.
 Shrug NFT project interacts with ChainLink price feed aggregators to retrieve latest price of assets to increase security and decrease vulnerability points like flash loan attack.
 
 ## Addresses of deployed contract on rinkeby network
