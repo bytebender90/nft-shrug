@@ -1,37 +1,49 @@
-# StormX Shrug NFT Experiment
+# StormX Shrug NFT
 
 ## Overview
 
-Smart contract for shurg nft experiment.
+Smart contract for shurg NFT.
+
 #### 1. Shrug NFT for shrug images
+
 Each shrug image is represented by Shrug NFT which includes ownership, detailed information. The information of token is saved on IPFS as json format and it includes the IPFS uri of shrug image.
+
 ##### 2. Shrug Sale for selling tokens to users
+
 Users can buy Shrug NFT with ETH, STMX, USDT and the price of each token is calculated by contract which is based on exponential bonding curve logic. The max supply of Shrug NFT is 500 as constant.
 Shrug NFT project interacts with ChainLink price feed aggregators to retrieve latest price of assets to increase security and decrease vulnerability points like flash loan attack.
 
 ## Addresses of deployed contract on rinkeby network
-``ShrugNFT``: 0x90cF3d432F84f6696107E378d5D848C9A738db07
 
-``ShrugSale``:  0xA96F2d842A40EA29411CE34B1544a2253f0c8011
+`ShrugNFT`: 0x90cF3d432F84f6696107E378d5D848C9A738db07
+
+`ShrugSale`: 0xA96F2d842A40EA29411CE34B1544a2253f0c8011
 
 ## Addresses of deployed contract on mainnet
 
-*TODO: Add mainnet smart contract addresses*
+`ShrugNFT`: 0x3294389d8748A661Bf7A1e86dfC6d2B004B76d5A
+
+`ShrugSale`: 0x30b4Da4fE936694C6eddd00EE4fcDD83606262ee
 
 ## Deployment
 
 ### Environment Setup
 
 1. First clone this repository to your computer.
+
 ```
 $ git clone ...
-$ cd nft-experiment
+$ cd nft-shrug
 ```
+
 2. Then install the node modules.
+
 ```
 $ npm install
 ```
+
 3. Create secret.mainnet.json & secret.testnet.json in root directory. Fill out all info needed on those files in according to secret.example.json.
+
 ```
 {
   "mnemonic": "",
@@ -50,11 +62,13 @@ $ npm install
 ### Deploy to Local Machine
 
 1. Run development server using Truffle.
+
 ```
 $ truffle develop
 ```
 
 2. Deploy contracts.
+
 ```
 $ truffle migrate
 ```
@@ -83,4 +97,4 @@ $ truffle migrate --network mainnet
 
 5. ChainLink Ethereum Price Feeds. https://docs.chain.link/docs/ethereum-addresses/
 
-6. Flash loan attack https://coinmarketcap.com/alexandria/article/what-are-flash-loan-attacks 
+6. Flash loan attack https://coinmarketcap.com/alexandria/article/what-are-flash-loan-attacks
