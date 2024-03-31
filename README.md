@@ -2,7 +2,7 @@
 
 ## Overview
 
-Smart contract for shurg NFT.
+Smart contract for shurg NFT
 
 #### 1. Shrug NFT for shrug images
 
